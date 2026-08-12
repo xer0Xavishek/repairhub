@@ -1,0 +1,17 @@
+{
+  "name": "repairhub-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "server:dev": "npm --prefix server run dev",
+    "client:dev": "npm --prefix client run dev",
+    "seed": "npm --prefix server run seed",
+    "test": "npm --prefix server test",
+    "test:unit": "npm --prefix server test -- ../tests/unit/",
+    "test:module1": "npm --prefix server test -- ../tests/module1_repair_lifecycle.test.js",
+    "test:module2": "npm --prefix server test -- ../tests/module2_discovery_booking.test.js",
+    "test:module3": "npm --prefix server test -- ../tests/module3_events_sustainability.test.js",
+    "test:module4": "npm --prefix server test -- ../tests/module4_quotes_escrow_chat.test.js",
+    "test:module5": "npm --prefix server test -- ../tests/module5_reviews_admin.test.js"
+  }
+}
