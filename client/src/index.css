@@ -1,0 +1,352 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,200;0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&family=JetBrains+Mono:wght@400;500&display=swap');
+@import 'leaflet/dist/leaflet.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Ares Infra Design System Tokens (ARES-.-infra-DESIGN.md) ─── */
+:root {
+  /* Core Ares Infra Palette */
+  --ares-primary:       #CB4D22; /* Terracotta / Crimson Ochre Accent */
+  --ares-primary-hover: #B33F19;
+  --ares-secondary:     #EAE0D6; /* Warm Hairline Border & Accent */
+  --ares-tertiary:      #2D1B11; /* Deep Warm Espresso / Charcoal */
+  --ares-neutral:       #FFFFFF; /* Surface White */
+  --ares-bg:            #FAF8F5; /* Warm Architectural Canvas */
+  --ares-surface:       #FDFBF9; /* Subtle Warm Card Surface */
+  --ares-surface-hover: #F5EBE6; /* Muted Terracotta Hover */
+  --ares-text:          #2D1B11; /* Primary Text */
+  --ares-muted:         #7A6458; /* Secondary Muted Text */
+  --ares-border:        #EAE0D6; /* Hairline Border */
+
+  /* Aliased Variables for Legacy Theme Compatibility */
+  --apple-bg:           var(--ares-bg);
+  --apple-white:        var(--ares-neutral);
+  --apple-elevated:     var(--ares-surface);
+  --apple-surface-hover:var(--ares-surface-hover);
+  --apple-label:        var(--ares-text);
+  --apple-secondary:    var(--ares-muted);
+  --apple-tertiary:     #9E8B80;
+  --apple-border:       var(--ares-border);
+  --apple-border-strong:#D6C7B8;
+  --apple-blue:         var(--ares-primary);
+  --apple-blue-hover:   var(--ares-primary-hover);
+  --apple-blue-light:   #F5EBE6;
+  --apple-green:        #248A3D;
+  --apple-green-light:  #EBF8EE;
+  --apple-orange:       #C95100;
+  --apple-orange-light: #FFF4E5;
+  --apple-red:          #D93829;
+  --apple-red-light:    #FFEBE9;
+  --apple-purple:       #7B3F96;
+  --apple-purple-light: #F7EFFC;
+
+  --bg:          var(--ares-bg);
+  --surface:     var(--ares-neutral);
+  --surface-2:   var(--ares-surface);
+  --border:      var(--ares-border);
+  --border-strong: var(--apple-border-strong);
+  --text:        var(--ares-text);
+  --text-2:      var(--ares-muted);
+  --text-3:      var(--apple-tertiary);
+  --brand:       var(--ares-primary);
+  --brand-hover: var(--ares-primary-hover);
+  --brand-light: #F5EBE6;
+}
+
+@layer base {
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: var(--ares-bg);
+    color: var(--ares-text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+    color: var(--ares-text);
+    font-weight: 600;
+  }
+}
+
+/* ─── Ares Architectural Surfaces & Cards ─── */
+.card {
+  background: var(--ares-neutral);
+  border: 1px solid var(--ares-border);
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(45, 27, 17, 0.04);
+  transition: all 0.15s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(45, 27, 17, 0.08);
+  border-color: var(--ares-primary);
+}
+
+.card-elevated {
+  background: var(--ares-neutral);
+  border: 1px solid var(--ares-border);
+  border-radius: 2px;
+  box-shadow: 0 12px 32px rgba(45, 27, 17, 0.1);
+}
+
+/* ─── Ares Navigation Control ─── */
+.nav-pill {
+  padding: 5px 12px;
+  border-radius: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ares-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.nav-pill:hover {
+  color: var(--ares-text);
+  background: var(--ares-surface-hover);
+}
+
+.nav-pill.active {
+  background: var(--ares-surface-hover);
+  color: var(--ares-primary);
+  border-color: var(--ares-primary);
+  font-weight: 600;
+}
+
+/* ─── Ares Architectural Buttons ─── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--ares-primary);
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(203, 77, 34, 0.25);
+  transition: all 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: var(--ares-primary-hover);
+  box-shadow: 0 4px 12px rgba(203, 77, 34, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #FFFFFF;
+  color: var(--ares-text);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 2px;
+  border: 1px solid var(--ares-border);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--ares-surface-hover);
+  color: var(--ares-primary);
+  border-color: var(--ares-primary);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: transparent;
+  color: var(--ares-muted);
+  font-size: 12.5px;
+  font-weight: 500;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-ghost:hover {
+  background: var(--ares-surface-hover);
+  color: var(--ares-primary);
+}
+
+/* ─── Ares Badges ─── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.badge-blue {
+  background: #F5EBE6;
+  color: var(--ares-primary);
+  border: 1px solid rgba(203, 77, 34, 0.25);
+}
+
+.badge-green {
+  background: #EBF8EE;
+  color: #248A3D;
+  border: 1px solid rgba(36, 138, 61, 0.25);
+}
+
+.badge-orange, .badge-amber {
+  background: #FFF4E5;
+  color: #C95100;
+  border: 1px solid rgba(201, 81, 0, 0.25);
+}
+
+.badge-red {
+  background: #FFEBE9;
+  color: var(--apple-red);
+  border: 1px solid rgba(217, 56, 41, 0.25);
+}
+
+.badge-purple {
+  background: #F7EFFC;
+  color: var(--apple-purple);
+  border: 1px solid rgba(123, 63, 150, 0.25);
+}
+
+.badge-neutral {
+  background: #F5F1ED;
+  color: var(--ares-muted);
+  border: 1px solid var(--ares-border);
+}
+
+.dot-green {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34C759;
+  display: inline-block;
+  box-shadow: 0 0 0 2px rgba(52, 199, 89, 0.3);
+}
+
+/* ─── Ares Form Controls ─── */
+.label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ares-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.input,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="datetime-local"],
+select,
+textarea {
+  width: 100%;
+  padding: 9px 12px;
+  background: #FFFFFF;
+  border: 1px solid var(--ares-border);
+  border-radius: 2px;
+  color: var(--ares-text);
+  font-size: 13.5px;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.input:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--ares-primary);
+  box-shadow: 0 0 0 2px rgba(203, 77, 34, 0.15);
+}
+
+/* ─── Modals & Drawers ─── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(45, 27, 17, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ─── Leaflet Map Overrides for Ares Aesthetic ─── */
+.leaflet-container {
+  font-family: inherit;
+  border-radius: 2px;
+  z-index: 1;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 2px !important;
+  box-shadow: 0 8px 24px rgba(45, 27, 17, 0.15) !important;
+  border: 1px solid #EAE0D6 !important;
+  padding: 2px !important;
+}
+
+.leaflet-popup-content {
+  margin: 10px 12px !important;
+  line-height: 1.4 !important;
+}
+
+/* ─── Custom Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #D6C7B8;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B8A898;
+}
