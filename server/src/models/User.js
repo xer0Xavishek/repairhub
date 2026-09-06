@@ -94,7 +94,7 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
+//support location-based searches using MongoDB's 2dsphere index.
 userSchema.index({ location: '2dsphere' });
 
 userSchema.methods.matchPassword = async function (enteredPassword) {

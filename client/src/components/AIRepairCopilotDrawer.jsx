@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { 
-  Sparkles, 
-  X, 
-  AlertCircle, 
-  Key, 
-  ChevronDown, 
-  ChevronRight, 
-  CheckCircle2, 
-  ShieldAlert, 
-  Leaf, 
+import {
+  Sparkles,
+  X,
+  AlertCircle,
+  Key,
+  ChevronDown,
+  ChevronRight,
+  CheckCircle2,
+  ShieldAlert,
+  Leaf,
   ArrowRight,
   RefreshCw,
   Wrench,
@@ -25,11 +25,11 @@ const COPILOT_PRESETS = [
 
 export default function AIRepairCopilotDrawer({ isOpen, onClose, onRequestRepair }) {
   const [copilotQuery, setCopilotQuery] = useState('');
-  const [loading, setLoading]           = useState(false);
-  const [report, setReport]             = useState(null);
-  const [error, setError]               = useState('');
-  const [showKey, setShowKey]           = useState(false);
-  const [apiKey, setApiKey]             = useState('');
+  const [loading, setLoading] = useState(false);
+  const [report, setReport] = useState(null);
+  const [error, setError] = useState('');
+  const [showKey, setShowKey] = useState(false);
+  const [apiKey, setApiKey] = useState('');
 
   if (!isOpen) return null;
 
@@ -65,14 +65,14 @@ export default function AIRepairCopilotDrawer({ isOpen, onClose, onRequestRepair
             defectType: d.defect_type || 'Hardware Component Fault',
             confidence: d.confidence ? Math.round(d.confidence * 100) : 94,
             difficulty: d.difficulty || 'Moderate (Basic Tools)',
-            summary: d.defect_type 
+            summary: d.defect_type
               ? `Identified primary defect: ${d.defect_type}. Repair feasibility is classified as ${d.difficulty || 'Moderate'}.`
               : 'Technical inspection schematic matched.',
             safetyWarning: d.safety_warning || null,
             triageSteps: Array.isArray(d.triage_steps) ? d.triage_steps : [],
             partsNeeded: Array.isArray(d.parts_needed) ? d.parts_needed : [],
             toolsRequired: Array.isArray(d.tools_required) ? d.tools_required : [],
-            estimatedCostBDT: d.estimated_cost_range 
+            estimatedCostBDT: d.estimated_cost_range
               ? `${d.estimated_cost_range.min} – ${d.estimated_cost_range.max}`
               : '350 – 750',
             eWasteSavedKg: d.environmental_impact || '3.2 kg',
@@ -98,8 +98,8 @@ export default function AIRepairCopilotDrawer({ isOpen, onClose, onRequestRepair
 
   return (
     <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div 
-        className="card-elevated" 
+      <div
+        className="card-elevated"
         style={{
           width: '100%',
           maxWidth: 560,
@@ -140,7 +140,7 @@ export default function AIRepairCopilotDrawer({ isOpen, onClose, onRequestRepair
                 AI Repair Copilot
               </div>
               <div style={{ fontSize: 11.5, color: '#7A6458' }}>
-                Grounded RAG Diagnostics & Technical Schematics
+                Diagnostics & Technical Schematics
               </div>
             </div>
           </div>
@@ -151,7 +151,7 @@ export default function AIRepairCopilotDrawer({ isOpen, onClose, onRequestRepair
 
         {/* Scrollable Content Body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: 18 }}>
-          
+
           {/* Query Input Section */}
           <div>
             <label className="label" style={{ fontWeight: 600, color: '#2D1B11', marginBottom: 6 }}>
@@ -171,7 +171,7 @@ export default function AIRepairCopilotDrawer({ isOpen, onClose, onRequestRepair
                 Press <kbd style={{ background: '#E8E8ED', padding: '1px 4px', borderRadius: 3 }}>Ctrl + Enter</kbd> to diagnose
               </span>
               {copilotQuery && (
-                <button 
+                <button
                   onClick={() => setCopilotQuery('')}
                   style={{ background: 'none', border: 'none', color: '#7A6458', fontSize: 11, cursor: 'pointer', textDecoration: 'underline' }}
                 >
@@ -300,7 +300,7 @@ export default function AIRepairCopilotDrawer({ isOpen, onClose, onRequestRepair
           {/* DIAGNOSTIC REPORT CARD */}
           {report && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              
+
               {/* Refusal Card (Domain Guardrail) */}
               {report.isRefusal ? (
                 <div style={{
