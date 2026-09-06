@@ -8,6 +8,7 @@ const Booking = require('../models/Booking');
 const Payment = require('../models/Payment');
 const RepairCafeEvent = require('../models/RepairCafeEvent');
 const CommunityPost = require('../models/CommunityPost');
+const Guide = require('../models/Guide');
 const ItemHistoryLog = require('../models/ItemHistoryLog');
 const { generateTicketNumber, generateQRCodeDataURL } = require('./qrHelper');
 
@@ -28,6 +29,7 @@ const seedDatabase = async () => {
     await Payment.deleteMany({});
     await RepairCafeEvent.deleteMany({});
     await CommunityPost.deleteMany({});
+    await Guide.deleteMany({});
     await ItemHistoryLog.deleteMany({});
 
     console.log('[Seed] Cleared existing records across all collections.');
@@ -867,7 +869,130 @@ const seedDatabase = async () => {
 
     console.log('[Seed] Created 4 Dhaka community repair café events.');
 
-    // 8. Seed Real DIY Guides (RAG Knowledge Base)
+    // 8. Seed Real DIY Guides (Community Knowledge Base)
+    await Guide.create({
+      title: 'Replacing a burnt microwave waveguide mica plate (Samsung / Panasonic)',
+      authorId: repMap['rafiq@repairhub.com']._id,
+      authorName: 'Master Rafiq',
+      category: 'Home Appliances',
+      difficulty: 'Easy',
+      estimatedMinutes: 15,
+      summary: 'Fix sparking inside the microwave chamber by swapping out the burnt mica sheet on the interior right wall.',
+      toolsRequired: ['Phillips screwdriver', 'Utility scissors', 'Alcohol wipe'],
+      partsNeeded: ['Universal mica sheet (13 × 13 cm)'],
+      steps: [
+        {
+          stepNumber: 1,
+          stepTitle: 'Unplug — Safety First',
+          instruction: 'Disconnect from the AC mains outlet. Note: this guide only covers the interior mica cover; it does not require opening the outer high-voltage casing.',
+          safetyNote: 'Never touch internal 2,000 V capacitor.'
+        },
+        {
+          stepNumber: 2,
+          stepTitle: 'Remove the Burnt Mica Card',
+          instruction: 'Locate the rectangular sheet on the right interior wall. Slide out the plastic retention pin.'
+        },
+        {
+          stepNumber: 3,
+          stepTitle: 'Trace & Cut Replacement',
+          instruction: 'Lay the old sheet on new mica, trace the outline with a pencil, and cut with scissors.'
+        },
+        {
+          stepNumber: 4,
+          stepTitle: 'Degrease & Install',
+          instruction: 'Wipe grease from the cavity behind the slot with isopropyl alcohol, insert the new sheet, and latch the pin.'
+        }
+      ],
+      upvotes: 42
+    });
+
+    await Guide.create({
+      title: 'Shimano 21/24-speed derailleur indexing and chain slip fix',
+      authorId: repMap['bikedoctor@repairhub.com']._id,
+      authorName: 'Dhaka Bike Doctor',
+      category: 'Bicycles',
+      difficulty: 'Moderate',
+      estimatedMinutes: 25,
+      summary: 'Eliminate gear clicking, phantom shifts, and chain slippage by tuning limit screws and cable tension.',
+      toolsRequired: ['PH2 screwdriver', '5mm hex key', 'Bike stand'],
+      partsNeeded: ['PTFE chain lubricant'],
+      steps: [
+        {
+          stepNumber: 1,
+          stepTitle: 'Check Hanger Alignment',
+          instruction: 'Look from behind — the derailleur cage must be perfectly vertical relative to the cassette.'
+        },
+        {
+          stepNumber: 2,
+          stepTitle: 'Set High Limit Screw',
+          instruction: 'Shift to smallest cog. Rotate H-screw until top jockey wheel lines up under the outer cog edge.'
+        },
+        {
+          stepNumber: 3,
+          stepTitle: 'Fine-Tune Cable Tension',
+          instruction: 'Shift one click up. If the chain hesitates, turn the barrel adjuster ¼ turn counter-clockwise.'
+        }
+      ],
+      upvotes: 35
+    });
+
+    await Guide.create({
+      title: 'Smartphone OLED display replacement (adhesive softening + battery disconnect)',
+      authorId: repMap['farhan.laptop@repairhub.com']._id,
+      authorName: 'FixSmart Lab',
+      category: 'Smartphones',
+      difficulty: 'Advanced',
+      estimatedMinutes: 40,
+      summary: 'Safely soften waterproof perimeter adhesive, disconnect the battery first, and transplant the digitizer assembly.',
+      toolsRequired: ['Heat pad (75°C)', 'Suction cup', 'Plastic pry picks', 'Pentalobe driver'],
+      partsNeeded: ['Replacement OLED assembly', 'Pre-cut B-7000 adhesive tape'],
+      steps: [
+        {
+          stepNumber: 1,
+          stepTitle: 'Heat the Perimeter (70–80°C)',
+          instruction: 'Apply controlled heat for 3 min to soften factory waterproof adhesive.',
+          safetyNote: 'Never exceed 85°C — risk of battery swell or puncture.'
+        },
+        {
+          stepNumber: 2,
+          stepTitle: 'Disconnect Battery Ribbon First',
+          instruction: 'Remove the shielding bracket and unplug the battery ribbon before touching any display connectors.',
+          safetyNote: 'Short-circuit risk: always cut power before handling flex cables.'
+        }
+      ],
+      upvotes: 28
+    });
+
+    await Guide.create({
+      title: 'Blender Motor Carbon Brush Replacement & Commutator Reconditioning',
+      authorId: repMap['rafiq@repairhub.com']._id,
+      authorName: 'Master Rafiq',
+      category: 'Home Appliances',
+      difficulty: 'Easy',
+      estimatedMinutes: 20,
+      summary: 'Replace worn motor carbon brushes to eliminate burning electrical smell and restore high-torque blending power.',
+      toolsRequired: ['Phillips Screwdriver', 'Fine 600-grit Sandpaper', 'Cotton Swabs'],
+      partsNeeded: ['Carbon Brushes (matched pair, 5x5mm)'],
+      steps: [
+        {
+          stepNumber: 1,
+          stepTitle: 'Unplug and Access Motor Base',
+          instruction: 'Unscrew the four rubber foot pads on the base and lift bottom housing.'
+        },
+        {
+          stepNumber: 2,
+          stepTitle: 'Inspect Carbon Brushes',
+          instruction: 'Slide out spring-loaded carbon brushes from copper guides. If length is under 4mm, replace.'
+        },
+        {
+          stepNumber: 3,
+          stepTitle: 'Clean Commutator',
+          instruction: 'Clean carbon dust from copper commutator bars using isopropyl alcohol before installing new brushes.'
+        }
+      ],
+      upvotes: 19
+    });
+
     await CommunityPost.create({
       authorId: repMap['rafiq@repairhub.com']._id,
       title: 'How to Fix Microwave Sparking & Arcing for under ৳200 in Dhaka',
@@ -904,7 +1029,7 @@ const seedDatabase = async () => {
       upvoteCount: 39,
     });
 
-    console.log('[Seed] Created 4 genuine DIY repair knowledge posts.');
+    console.log('[Seed] Created 4 genuine DIY repair guides in Guide collection and 4 CommunityPosts.');
     console.log('=====================================================');
     console.log('🌱 RepairHub Showcase Database Seeding Complete!');
     console.log('=====================================================');

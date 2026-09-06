@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middlewares/authMiddleware');
+const { optionalAuth } = require('../middlewares/authMiddleware');
 const {
   getGuides,
   getGuideById,
@@ -10,7 +10,7 @@ const {
 
 router.get('/', getGuides);
 router.get('/:id', getGuideById);
-router.post('/', protect, createGuide);
-router.post('/:id/upvote', protect, toggleUpvoteGuide);
+router.post('/', optionalAuth, createGuide);
+router.post('/:id/upvote', optionalAuth, toggleUpvoteGuide);
 
 module.exports = router;

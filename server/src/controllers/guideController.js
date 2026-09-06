@@ -1,4 +1,5 @@
 const Guide = require('../models/Guide');
+const User = require('../models/User');
 
 // @desc    Get all community DIY repair guides (Module 3 - F15)
 // @route   GET /api/guides
@@ -47,7 +48,7 @@ const getGuideById = async (req, res) => {
 
 // @desc    Create a new community DIY repair guide (Module 3 - F15)
 // @route   POST /api/guides
-// @access  Private
+// @access  Private / Public (with fallback demo user)
 const createGuide = async (req, res) => {
   try {
     const { title, category, difficulty, estimatedMinutes, summary, steps, toolsRequired, partsNeeded } = req.body;
@@ -56,10 +57,21 @@ const createGuide = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Title, category, and summary are required' });
     }
 
+    let authorId = req.user?._id;
+    let authorName = req.user?.name;
+
+    if (!authorId) {
+      const fallbackUser = await User.findOne({ email: 'avishek@bracu.ac.bd' }) || await User.findOne({ role: 'requester' }) || await User.findOne();
+      if (fallbackUser) {
+        authorId = fallbackUser._id;
+        authorName = fallbackUser.name || 'Avishek Biswas';
+      }
+    }
+
     const guide = await Guide.create({
       title,
-      authorId: req.user._id,
-      authorName: req.user.name,
+      authorId,
+      authorName: authorName || 'Community Fixer',
       category,
       difficulty: difficulty || 'Moderate',
       estimatedMinutes: estimatedMinutes || 30,
@@ -69,15 +81,17 @@ const createGuide = async (req, res) => {
       partsNeeded: partsNeeded || [],
     });
 
+    console.log(`[DB] DIY Guide created and saved in Atlas with ID: ${guide._id}`);
     res.status(201).json({ success: true, message: 'DIY Guide published successfully', data: guide });
   } catch (error) {
+    console.error('[Create Guide Error]:', error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
 // @desc    Upvote a community DIY guide (Module 3 - F15)
 // @route   POST /api/guides/:id/upvote
-// @access  Private
+// @access  Private / Public (with fallback demo user)
 const toggleUpvoteGuide = async (req, res) => {
   try {
     const guide = await Guide.findById(req.params.id);
@@ -85,7 +99,16 @@ const toggleUpvoteGuide = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Guide not found' });
     }
 
-    const userId = req.user._id;
+    let userId = req.user?._id;
+    if (!userId) {
+      const fallbackUser = await User.findOne({ email: 'avishek@bracu.ac.bd' }) || await User.findOne();
+      userId = fallbackUser?._id;
+    }
+
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'User identity required to upvote' });
+    }
+
     const hasUpvoted = guide.upvotedBy.some((id) => id.toString() === userId.toString());
 
     if (hasUpvoted) {
@@ -99,6 +122,7 @@ const toggleUpvoteGuide = async (req, res) => {
     }
 
     await guide.save();
+    console.log(`[DB] DIY Guide ${guide._id} upvote toggled: ${guide.upvotes}`);
     res.json({
       success: true,
       message: hasUpvoted ? 'Upvote removed' : 'Guide upvoted',
@@ -106,6 +130,7 @@ const toggleUpvoteGuide = async (req, res) => {
       hasUpvoted: !hasUpvoted,
     });
   } catch (error) {
+    console.error('[Upvote Guide Error]:', error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };

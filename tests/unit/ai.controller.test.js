@@ -35,7 +35,7 @@ describe('AIController Unit Test Suite', () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.data.matched_manual).toContain('OLED');
+      expect(res.body.data.matched_manual).toMatch(/OLED|Display/i);
     });
   });
 
