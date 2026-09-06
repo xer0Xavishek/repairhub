@@ -1,14 +1,14 @@
 import React, { useState, useRef } from 'react';
-import { 
-  Camera, 
-  X, 
-  AlertCircle, 
-  Key, 
-  ChevronDown, 
-  ChevronRight, 
-  CheckCircle2, 
-  ShieldAlert, 
-  Leaf, 
+import {
+  Camera,
+  X,
+  AlertCircle,
+  Key,
+  ChevronDown,
+  ChevronRight,
+  CheckCircle2,
+  ShieldAlert,
+  Leaf,
   ArrowRight,
   RefreshCw,
   Upload,
@@ -18,17 +18,17 @@ import {
 import axios from 'axios';
 
 export default function AIVisionAssessmentModal({ isOpen, onClose, onRequestRepair }) {
-  const [selectedImage, setSelectedImage]       = useState(null);
-  const [imagePreview, setImagePreview]         = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [visionDeviceName, setVisionDeviceName] = useState(''); // Separate state, never filled from Copilot!
-  const [visionCategory, setVisionCategory]     = useState('Electronics');
-  const [loading, setLoading]                   = useState(false);
-  const [report, setReport]                     = useState(null);
-  const [error, setError]                       = useState('');
-  const [showKey, setShowKey]                   = useState(false);
-  const [apiKey, setApiKey]                     = useState('');
-  const [isDragging, setIsDragging]             = useState(false);
-  const fileInputRef                            = useRef(null);
+  const [visionCategory, setVisionCategory] = useState('Electronics');
+  const [loading, setLoading] = useState(false);
+  const [report, setReport] = useState(null);
+  const [error, setError] = useState('');
+  const [showKey, setShowKey] = useState(false);
+  const [apiKey, setApiKey] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef(null);
 
   if (!isOpen) return null;
 
@@ -139,7 +139,7 @@ export default function AIVisionAssessmentModal({ isOpen, onClose, onRequestRepa
           severityScore: v.severity_score || 7,
           isRepairable: v.is_repairable !== false,
           estimatedRepairDays: v.estimated_repair_time_days || 2,
-          estimatedCostBDT: v.estimated_price_range 
+          estimatedCostBDT: v.estimated_price_range
             ? `${v.estimated_price_range.min} – ${v.estimated_price_range.max}`
             : '450 – 1200',
           recommendation: v.recommendation || 'Hardware component defect identified via multimodal visual inspection.',
@@ -168,8 +168,8 @@ export default function AIVisionAssessmentModal({ isOpen, onClose, onRequestRepa
 
   return (
     <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div 
-        className="card-elevated" 
+      <div
+        className="card-elevated"
         style={{
           width: '100%',
           maxWidth: 580,
@@ -221,13 +221,13 @@ export default function AIVisionAssessmentModal({ isOpen, onClose, onRequestRepa
 
         {/* Content Body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: 18 }}>
-          
+
           {/* Photo Dropzone & Preview */}
           <div>
             <label className="label" style={{ fontWeight: 600, color: '#2D1B11', marginBottom: 6 }}>
               Hardware Photograph of Damage / Defect
             </label>
-            
+
             <input
               type="file"
               ref={fileInputRef}
@@ -285,27 +285,27 @@ export default function AIVisionAssessmentModal({ isOpen, onClose, onRequestRepa
                   {isDragging ? 'Drop hardware photo here' : 'Click or drag photo of damaged item'}
                 </div>
                 <div style={{ fontSize: 11.5, color: isDragging ? '#CB4D22' : '#7A6458', fontWeight: isDragging ? 600 : 400 }}>
-                  {isDragging ? 'Release mouse to inspect damage' : 'Supports smartphone displays, circuit boards, cracked frames, frayed wiring (Max 12MB)'}
+                  {isDragging ? 'Release mouse to inspect damage' : 'Supports Max 12MB'}
                 </div>
               </div>
             ) : (
-              <div 
+              <div
                 onDragOver={handleDragOver}
                 onDragEnter={handleDragEnter}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
-                style={{ 
-                  position: 'relative', 
-                  borderRadius: 2, 
-                  overflow: 'hidden', 
-                  border: isDragging ? '2px dashed #CB4D22' : '1px solid #EAE0D6', 
-                  background: '#2D1B11' 
+                style={{
+                  position: 'relative',
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  border: isDragging ? '2px dashed #CB4D22' : '1px solid #EAE0D6',
+                  background: '#2D1B11'
                 }}
               >
-                <img 
-                  src={imagePreview} 
-                  alt="Damage Preview" 
-                  style={{ width: '100%', maxHeight: 240, objectFit: 'contain', display: 'block', margin: '0 auto' }} 
+                <img
+                  src={imagePreview}
+                  alt="Damage Preview"
+                  style={{ width: '100%', maxHeight: 240, objectFit: 'contain', display: 'block', margin: '0 auto' }}
                 />
                 <button
                   type="button"
@@ -448,7 +448,7 @@ export default function AIVisionAssessmentModal({ isOpen, onClose, onRequestRepa
           {/* VISUAL ASSESSMENT REPORT CARD */}
           {report && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              
+
               {/* Verdict Card */}
               <div className="card" style={{ padding: '16px 18px', borderLeft: '4px solid #CB4D22' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: 6 }}>
