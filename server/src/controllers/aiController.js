@@ -4,6 +4,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
 require('dotenv').config();
 
 const AIDiagnosticReport = require('../models/AIDiagnosticReport');
+const User = require('../models/User');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // Active, high-speed Google Gemini models verified for text & multimodal vision
@@ -643,21 +644,52 @@ const runDiagnosticTriage = async (req, res) => {
       };
     }
 
-    // 4. Save to Diagnostic History if authenticated
-    if (req.user) {
-      try {
-        await AIDiagnosticReport.create({
-          requesterId: req.user._id,
-          detectedItemType: bestMatch.deviceType,
-          detectedDefect: finalReport.defect_type,
-          severityScore: 6,
-          triageSteps: finalReport.triage_steps,
-          safetyWarning: finalReport.safety_warning,
-          estimatedPriceRange: finalReport.estimated_cost_range,
-        });
-      } catch (dbErr) {
-        console.warn('[DB] Could not save diagnostic history:', dbErr.message);
+    // 4. Save to Diagnostic History in MongoDB Atlas
+    try {
+      let requesterId = req.user?._id || null;
+      let requesterEmail = req.user?.email || '';
+
+      if (!requesterId) {
+        const fallbackUser = await User.findOne({ email: 'avishek@bracu.ac.bd' }) || await User.findOne({ role: 'customer' });
+        if (fallbackUser) {
+          requesterId = fallbackUser._id;
+          requesterEmail = fallbackUser.email;
+        }
       }
+
+      const costMin = finalReport.estimated_cost_range?.min || 300;
+      const costMax = finalReport.estimated_cost_range?.max || 1000;
+      const triageSteps = Array.isArray(finalReport.triage_steps) ? finalReport.triage_steps : [];
+      const safetyWarning = finalReport.safety_warning || '';
+
+      const reportDoc = await AIDiagnosticReport.create({
+        requesterId,
+        requesterEmail,
+        reportType: 'triage',
+        query: query || '',
+        detectedItemType: bestMatch.deviceType || itemTitle || 'General Appliance',
+        detectedDefect: finalReport.defect_type || 'Hardware Fault',
+        severityScore: finalReport.difficulty?.toLowerCase().includes('high') ? 8 : 5,
+        estimatedCostMin: costMin,
+        estimatedCostMax: costMax,
+        estimatedPriceRange: {
+          min: costMin,
+          max: costMax,
+          currency: finalReport.estimated_cost_range?.currency || 'BDT (৳)',
+        },
+        safetyWarning: safetyWarning,
+        safetyWarnings: safetyWarning ? [safetyWarning] : [],
+        triageSteps: triageSteps,
+        suggestedTriageSteps: triageSteps,
+        relevantManualsRetrieved: [bestMatch.title || 'Service Schematic Manual'],
+        cloudSource: finalReport.cloud_source || 'Gemini Cloud AI',
+        rawAnalysis: finalReport,
+      });
+
+      console.log(`[DB] AIDiagnosticReport successfully saved to MongoDB Atlas with ID: ${reportDoc._id}`);
+      finalReport.reportId = reportDoc._id;
+    } catch (dbErr) {
+      console.error('[DB Error] Failed to persist AIDiagnosticReport to Atlas:', dbErr.message);
     }
 
     res.status(200).json({
@@ -812,6 +844,54 @@ const runVisualDamageAssessment = async (req, res) => {
       };
     }
 
+    // Save to AI Vision Diagnostic History in MongoDB Atlas
+    try {
+      let requesterId = req.user?._id || null;
+      let requesterEmail = req.user?.email || '';
+
+      if (!requesterId) {
+        const fallbackUser = await User.findOne({ email: 'avishek@bracu.ac.bd' }) || await User.findOne({ role: 'customer' });
+        if (fallbackUser) {
+          requesterId = fallbackUser._id;
+          requesterEmail = fallbackUser.email;
+        }
+      }
+
+      const costMin = assessment.estimated_price_range?.min || 450;
+      const costMax = assessment.estimated_price_range?.max || 1200;
+      const triageSteps = Array.isArray(assessment.triage_steps) ? assessment.triage_steps : [];
+      const safetyWarning = assessment.safety_warning || '';
+
+      const reportDoc = await AIDiagnosticReport.create({
+        requesterId,
+        requesterEmail,
+        reportType: 'visual',
+        query: `${itemTitle || ''} ${category || ''}`.trim() || 'Visual Damage Assessment',
+        detectedItemType: assessment.item_analyzed || itemTitle || 'Inspected Hardware',
+        detectedDefect: assessment.defect_type || 'Visual Defect',
+        severityScore: assessment.severity_score || 7,
+        estimatedCostMin: costMin,
+        estimatedCostMax: costMax,
+        estimatedPriceRange: {
+          min: costMin,
+          max: costMax,
+          currency: assessment.estimated_price_range?.currency || 'BDT (৳)',
+        },
+        safetyWarning: safetyWarning,
+        safetyWarnings: safetyWarning ? [safetyWarning] : [],
+        triageSteps: triageSteps,
+        suggestedTriageSteps: triageSteps,
+        relevantManualsRetrieved: ['Visual Damage Assessment Telemetry'],
+        cloudSource: assessment.cloud_source || 'Gemini Vision AI',
+        rawAnalysis: assessment,
+      });
+
+      console.log(`[DB] AI Visual Damage Report saved to MongoDB Atlas with ID: ${reportDoc._id}`);
+      assessment.reportId = reportDoc._id;
+    } catch (dbErr) {
+      console.error('[DB Error] Failed to persist AI Visual Report to Atlas:', dbErr.message);
+    }
+
     res.status(200).json({
       success: true,
       data: assessment,
@@ -822,7 +902,33 @@ const runVisualDamageAssessment = async (req, res) => {
   }
 };
 
+// @desc    Get AI Diagnostic Reports history from MongoDB Atlas
+// @route   GET /api/ai/reports & GET /api/ai/history
+// @access  Public / Private
+const getDiagnosticReports = async (req, res) => {
+  try {
+    let filter = {};
+    if (req.user) {
+      filter = { $or: [{ requesterId: req.user._id }, { requesterEmail: req.user.email }] };
+    }
+    const reports = await AIDiagnosticReport.find(filter)
+      .sort({ createdAt: -1 })
+      .limit(30)
+      .populate('requesterId', 'name email role');
+
+    res.status(200).json({
+      success: true,
+      count: reports.length,
+      data: reports,
+    });
+  } catch (error) {
+    console.error('[Get Diagnostic Reports Error]:', error.message);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   runDiagnosticTriage,
   runVisualDamageAssessment,
+  getDiagnosticReports,
 };

@@ -29,7 +29,7 @@
 repairhub/
 ├── client/                     # Frontend View Layer (React 18 + Vite + TailwindCSS)
 │   ├── src/
-│   │   ├── components/         # StatusPipeline, AIAssistantDrawer, QRCodeModal, ImpactCard, Navbar
+│   │   ├── components/         # StatusPipeline, AIRepairCopilotDrawer, QRCodeModal, ImpactCard, Navbar
 │   │   ├── App.jsx             # Main Application Container & Dashboards
 │   │   └── main.jsx
 │   └── package.json

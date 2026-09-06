@@ -143,7 +143,7 @@ npm run test:module5
 repairhub/
 ├── client/                     # Frontend View Layer (React 18 + Vite + TailwindCSS)
 │   ├── src/
-│   │   ├── components/         # StatusPipeline, InteractiveMap, AIAssistantDrawer, AdminDashboard, etc.
+│   │   ├── components/         # StatusPipeline, InteractiveMap, AIRepairCopilotDrawer, AdminDashboard, etc.
 │   │   ├── App.jsx             # Main Application Container & Route Switching
 │   │   └── main.jsx
 │   └── package.json

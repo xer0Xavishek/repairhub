@@ -52,6 +52,35 @@ const protect = async (req, res, next) => {
   }
 };
 
+const optionalAuth = async (req, res, next) => {
+  let token;
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    try {
+      token = req.headers.authorization.split(' ')[1];
+      if (token && token.startsWith('demo_')) {
+        const demoKey = token.replace('demo_', '').toLowerCase();
+        const emailMap = {
+          customer: 'avishek@bracu.ac.bd',
+          technician: 'rafiq@repairhub.com',
+          workshop: 'rafiq@repairhub.com',
+          freelance: 'bikedoctor@repairhub.com',
+          freelancer: 'bikedoctor@repairhub.com',
+          admin: 'admin@repairhub.com',
+        };
+        const targetEmail = emailMap[demoKey] || 'avishek@bracu.ac.bd';
+        req.user = await User.findOne({ email: targetEmail }).select('-passwordHash');
+        return next();
+      }
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'repairhub_super_secret_jwt_key_2026');
+      req.user = await User.findById(decoded.id).select('-passwordHash');
+    } catch (e) {
+      req.user = null;
+    }
+  }
+  next();
+};
+
 const authorize = (...roles) => {
   return (req, res, next) => {
     if (!req.user || !roles.includes(req.user.role)) {
@@ -64,4 +93,4 @@ const authorize = (...roles) => {
   };
 };
 
-module.exports = { protect, authorize };
+module.exports = { protect, authorize, optionalAuth };

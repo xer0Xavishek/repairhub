@@ -10,7 +10,21 @@ const aiDiagnosticReportSchema = new mongoose.Schema(
     requesterId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      default: null,
+      required: false,
+    },
+    requesterEmail: {
+      type: String,
+      default: '',
+    },
+    reportType: {
+      type: String,
+      enum: ['triage', 'visual'],
+      default: 'triage',
+    },
+    query: {
+      type: String,
+      default: '',
     },
     detectedItemType: {
       type: String,
@@ -32,7 +46,20 @@ const aiDiagnosticReportSchema = new mongoose.Schema(
       type: Number,
       default: 1000,
     },
+    estimatedPriceRange: {
+      min: { type: Number, default: 300 },
+      max: { type: Number, default: 1000 },
+      currency: { type: String, default: 'BDT (৳)' },
+    },
+    safetyWarning: {
+      type: String,
+      default: '',
+    },
     safetyWarnings: {
+      type: [String],
+      default: [],
+    },
+    triageSteps: {
       type: [String],
       default: [],
     },
@@ -43,6 +70,14 @@ const aiDiagnosticReportSchema = new mongoose.Schema(
     relevantManualsRetrieved: {
       type: [String],
       default: [],
+    },
+    cloudSource: {
+      type: String,
+      default: 'Gemini Cloud AI',
+    },
+    rawAnalysis: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
     },
   },
   { timestamps: true }

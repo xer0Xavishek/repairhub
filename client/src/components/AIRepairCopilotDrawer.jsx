@@ -42,10 +42,13 @@ export default function AIRepairCopilotDrawer({ isOpen, onClose, onRequestRepair
     setError('');
 
     try {
+      const token = sessionStorage.getItem('repairhub_token') || localStorage.getItem('repairhub_token');
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
       const res = await axios.post('/api/ai/diagnose', {
         query: q.trim(),
         geminiApiKey: apiKey ? apiKey.trim() : undefined
-      });
+      }, { headers });
 
       if (res.data?.success) {
         const d = res.data.data;
@@ -53,12 +56,14 @@ export default function AIRepairCopilotDrawer({ isOpen, onClose, onRequestRepair
         // Guardrail refusal
         if (d.is_repair_related === false) {
           setReport({
+            reportId: d.reportId,
             isRefusal: true,
             refusalReason: d.refusal_reason || 'This query is outside my repair diagnostic scope.',
             suggestion: d.suggestion || 'Try describing a physical hardware fault (e.g., "My microwave sparks inside").'
           });
         } else {
           setReport({
+            reportId: d.reportId,
             isRefusal: false,
             deviceType: d.matched_manual || 'Hardware Diagnostic Guide',
             matchedManual: d.matched_manual,
@@ -336,9 +341,16 @@ export default function AIRepairCopilotDrawer({ isOpen, onClose, onRequestRepair
                   {/* Verdict Header */}
                   <div className="card" style={{ padding: '16px 18px', borderLeft: '4px solid #CB4D22' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: 6 }}>
-                      <span className="badge" style={{ background: '#F5EBE6', color: '#CB4D22', fontSize: 11 }}>
-                        <Sparkles size={11} /> {report.cloudSource}
-                      </span>
+                      <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                        <span className="badge" style={{ background: '#F5EBE6', color: '#CB4D22', fontSize: 11 }}>
+                          <Sparkles size={11} /> {report.cloudSource}
+                        </span>
+                        {report.reportId && (
+                          <span className="badge" style={{ background: '#E8F5E9', color: '#2E7D32', fontSize: 10.5, border: '1px solid #A5D6A7' }}>
+                            ✓ Atlas DB Synced
+                          </span>
+                        )}
+                      </div>
                       <span className="badge badge-green" style={{ fontSize: 11 }}>
                         <Leaf size={11} /> Saves {report.eWasteSavedKg} e-waste
                       </span>

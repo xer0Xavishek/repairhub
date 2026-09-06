@@ -123,16 +123,20 @@ export default function AIVisionAssessmentModal({ isOpen, onClose, onRequestRepa
     setError('');
 
     try {
+      const token = sessionStorage.getItem('repairhub_token') || localStorage.getItem('repairhub_token');
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
       const res = await axios.post('/api/ai/visual-assessment', {
         itemTitle: visionDeviceName.trim() || undefined,
         category: visionCategory || undefined,
         imageData: imagePreview,
         geminiApiKey: apiKey ? apiKey.trim() : undefined
-      });
+      }, { headers });
 
       if (res.data?.success) {
         const v = res.data.data;
         setReport({
+          reportId: v.reportId,
           itemAnalyzed: v.item_analyzed || visionDeviceName || 'Inspected Hardware',
           category: v.category || visionCategory,
           defectType: v.defect_type || 'Physical Component Integrity Inspection',
@@ -452,9 +456,16 @@ export default function AIVisionAssessmentModal({ isOpen, onClose, onRequestRepa
               {/* Verdict Card */}
               <div className="card" style={{ padding: '16px 18px', borderLeft: '4px solid #CB4D22' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: 6 }}>
-                  <span className="badge" style={{ background: '#F5EBE6', color: '#CB4D22', fontSize: 11 }}>
-                    <Sparkles size={11} /> {report.cloudSource}
-                  </span>
+                  <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                    <span className="badge" style={{ background: '#F5EBE6', color: '#CB4D22', fontSize: 11 }}>
+                      <Sparkles size={11} /> {report.cloudSource}
+                    </span>
+                    {report.reportId && (
+                      <span className="badge" style={{ background: '#E8F5E9', color: '#2E7D32', fontSize: 10.5, border: '1px solid #A5D6A7' }}>
+                        ✓ Atlas DB Synced
+                      </span>
+                    )}
+                  </div>
                   <span className={`badge ${report.isRepairable ? 'badge-green' : 'badge-orange'}`} style={{ fontSize: 11 }}>
                     {report.isRepairable ? '✓ Economically Viable' : '⚠ Significant Damage'}
                   </span>
