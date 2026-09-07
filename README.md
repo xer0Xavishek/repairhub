@@ -18,7 +18,7 @@
 | :---: | :---: | :---: |
 | **23201227** | **Tabassum Subah Upoma** |  Multi-Step Request Wizard, Category Engine, Environmental Impact CO2 Calculator, 5-Stage Status Pipeline, Audit Log |
 | **23201444** | **Sreema Roy** |   Global Search (Ctrl+K) and Filters, Multi-Quote Bidding, Appointment Booking Calendar, Slot Cancellation/Reschedule, Review & 3-Axis Rating, |
-| **23201427** | **Avishek Biswas** | Landing Page & Design System, Interactive Geolocation Map (Leaflet), AI Repair Copilot, AI Vision Damage Assessment, Stripe Payment Gateway, Socket.io Real-Time Chat |
+| **23201427** | **Avishek Biswas** |  Interactive Geolocation Map (Leaflet), AI Repair Copilot, AI Vision Damage Assessment, Stripe Payment Gateway, Socket.io Real-Time Chat |
 | **23201436** | **Mohammad Zubair Zaman** | QR Code Handover Generator, Repair Café Events & Waitlists, Requester Dashboard, DIY Community Guidelines, Admin Moderation Panel |
 
 ---
