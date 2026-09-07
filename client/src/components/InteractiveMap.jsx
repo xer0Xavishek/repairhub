@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
 import L from 'leaflet';
-import { 
-  MapPin, 
-  Star, 
-  Wrench, 
-  Calendar, 
-  ShieldCheck, 
-  Navigation, 
-  Filter, 
-  Users, 
-  Layers, 
-  Compass, 
+import {
+  MapPin,
+  Star,
+  Wrench,
+  Calendar,
+  ShieldCheck,
+  Navigation,
+  Filter,
+  Users,
+  Layers,
+  Compass,
   ChevronRight,
   Phone,
   Clock,
@@ -63,9 +63,9 @@ function calculateHaversineKm(lat1, lon1, lat2, lon2) {
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+    Math.cos((lat2 * Math.PI) / 180) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
@@ -85,13 +85,13 @@ function MapRecenter({ center, zoom }) {
   return null;
 }
 
-export default function InteractiveMap({ 
-  repairers = [], 
-  events = [], 
+export default function InteractiveMap({
+  repairers = [],
+  events = [],
   currentUser,
-  onBookSlot, 
-  onRequestQuote, 
-  onRSVPEvent 
+  onBookSlot,
+  onRequestQuote,
+  onRSVPEvent
 }) {
   // Default coordinates fallback for Dhaka
   const defaultDhaka = [23.7925, 90.4078];
@@ -114,7 +114,7 @@ export default function InteractiveMap({
       displayDistance: `${computedKm.toFixed(1)} km`,
     };
   });
-
+  // repair cafe
   const enrichedEvents = events.map((ev, i) => {
     const coordsMap = [
       [23.7712, 90.4255], // BRACU New Main Campus, Merul Badda
@@ -128,8 +128,8 @@ export default function InteractiveMap({
 
     const formattedDate = ev.date
       ? (typeof ev.date === 'string' && !ev.date.includes('T')
-          ? ev.date
-          : new Date(ev.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }))
+        ? ev.date
+        : new Date(ev.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }))
       : 'Upcoming Date';
 
     return {
@@ -139,8 +139,8 @@ export default function InteractiveMap({
       address: ev.address || ev.location?.address || ev.venue || 'Dhaka, Bangladesh',
       date: formattedDate,
       time: ev.time || (ev.startTime ? `${ev.startTime} – ${ev.endTime || '04:00 PM'}` : '10:00 AM – 04:00 PM'),
-      categories: Array.isArray(ev.categories) && ev.categories.length > 0 
-        ? ev.categories 
+      categories: Array.isArray(ev.categories) && ev.categories.length > 0
+        ? ev.categories
         : (Array.isArray(ev.categoriesHandled) && ev.categoriesHandled.length > 0 ? ev.categoriesHandled : ['Electronics', 'Small Appliances', 'Bicycles']),
       currentRsvps: Number(ev.currentRsvps != null ? ev.currentRsvps : (ev.rsvps?.length || 0)),
       capacity: Number(ev.capacity || 25),
@@ -196,7 +196,7 @@ export default function InteractiveMap({
     const matchesRating = !minRating || (Number(r.rating) || 0) >= minRating;
     const matchesPrice = !r.startingRate || (Number(r.startingRate) || 0) <= maxPrice;
     const sTerm = (searchTerm || '').trim().toLowerCase();
-    const matchesSearch = !sTerm || 
+    const matchesSearch = !sTerm ||
       (r.businessName || '').toLowerCase().includes(sTerm) ||
       (r.name || '').toLowerCase().includes(sTerm) ||
       (r.address || '').toLowerCase().includes(sTerm);
@@ -206,8 +206,8 @@ export default function InteractiveMap({
   const filteredEvents = enrichedEvents.filter((e) => {
     const matchesCategory = !filterCategory || filterCategory === 'All' || (e.categories && e.categories.includes(filterCategory));
     const sTerm = (searchTerm || '').trim().toLowerCase();
-    const matchesSearch = !sTerm || 
-      (e.title || '').toLowerCase().includes(sTerm) || 
+    const matchesSearch = !sTerm ||
+      (e.title || '').toLowerCase().includes(sTerm) ||
       (e.venue || '').toLowerCase().includes(sTerm);
     return matchesCategory && matchesSearch;
   });
@@ -230,11 +230,11 @@ export default function InteractiveMap({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-      
+
       {/* Top Filter & Search Bar */}
       <div className="card" style={{ padding: '16px 20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 12, justifyContent: 'space-between' }}>
-          
+
           {/* Category Filter Pills */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--apple-secondary)' }}>Category:</span>
@@ -277,7 +277,7 @@ export default function InteractiveMap({
               minWidth: 180,
             }}>
               <Search size={13} style={{ color: '#7A6458', flexShrink: 0 }} />
-              <input 
+              <input
                 type="text"
                 placeholder="Search workshop or café..."
                 value={searchTerm}
@@ -303,22 +303,22 @@ export default function InteractiveMap({
 
             <label style={{ fontSize: 12.5, color: '#7A6458', display: 'flex', alignItems: 'center', gap: 8, userSelect: 'none' }}>
               Radius: <strong style={{ color: '#2D1B11', minWidth: 42 }}>{radiusKm} km</strong>
-              <input 
-                type="range" 
-                min={1} 
-                max={15} 
-                value={radiusKm} 
-                onChange={(e) => setRadiusKm(+e.target.value)} 
-                style={{ width: 80, accentColor: '#CB4D22' }} 
+              <input
+                type="range"
+                min={1}
+                max={15}
+                value={radiusKm}
+                onChange={(e) => setRadiusKm(+e.target.value)}
+                style={{ width: 80, accentColor: '#CB4D22' }}
               />
             </label>
 
             <button
               onClick={() => setShowFilters(!showFilters)}
               className="btn-secondary"
-              style={{ 
-                padding: '5px 12px', 
-                fontSize: 12, 
+              style={{
+                padding: '5px 12px',
+                fontSize: 12,
                 gap: 6,
                 background: showFilters ? '#F5EBE6' : '#FFFFFF',
                 color: showFilters ? '#CB4D22' : '#2D1B11',
@@ -357,14 +357,14 @@ export default function InteractiveMap({
 
             <label style={{ fontSize: 12.5, color: '#7A6458', display: 'flex', alignItems: 'center', gap: 8 }}>
               Max Diagnostic Rate: <strong style={{ color: '#2D1B11' }}>৳{maxPrice}</strong>
-              <input 
-                type="range" 
-                min={200} 
-                max={1000} 
-                step={100} 
-                value={maxPrice} 
-                onChange={(e) => setMaxPrice(+e.target.value)} 
-                style={{ width: 110, accentColor: '#CB4D22' }} 
+              <input
+                type="range"
+                min={200}
+                max={1000}
+                step={100}
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(+e.target.value)}
+                style={{ width: 110, accentColor: '#CB4D22' }}
               />
             </label>
           </div>
@@ -375,24 +375,24 @@ export default function InteractiveMap({
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 360px', gap: 18 }}>
 
         {/* Live Leaflet Map Container */}
-        <div 
-          className="card" 
-          style={{ 
-            padding: 0, 
-            height: 520, 
-            position: 'relative', 
+        <div
+          className="card"
+          style={{
+            padding: 0,
+            height: 520,
+            position: 'relative',
             overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column'
           }}
         >
           {/* Top Overlaid Status Badge */}
-          <div style={{ 
-            position: 'absolute', 
-            top: 14, 
-            left: 14, 
-            zIndex: 1000, 
-            display: 'flex', 
+          <div style={{
+            position: 'absolute',
+            top: 14,
+            left: 14,
+            zIndex: 1000,
+            display: 'flex',
             gap: 8,
             pointerEvents: 'none'
           }}>
@@ -421,14 +421,14 @@ export default function InteractiveMap({
             </span>
           </div>
 
-          {/* True React-Leaflet Map Instance */}
+          {/* Leaflet Map Container Instance */}
           <MapContainer
             center={mapCenter}
             zoom={13}
             scrollWheelZoom={true}
             style={{ width: '100%', height: '100%', borderRadius: 16 }}
           >
-            {/* Clean OpenStreetMap Tiles (100% Free, No Watermarks or API Keys Required) */}
+            {/*OpenStreetMap api call Tiles */}
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -634,7 +634,7 @@ export default function InteractiveMap({
 
         {/* Selected Entity Inspector Sidebar */}
         <div className="card" style={{ padding: 22, display: 'flex', flexDirection: 'column', height: 520, overflowY: 'auto' }}>
-          
+
           {selectedEntity?.type === 'repairer' && selectedEntity.data && (() => {
             const rep = selectedEntity.data;
             const reviewsTotal = repairerReviews.length;
@@ -743,16 +743,16 @@ export default function InteractiveMap({
                     </div>
                   ) : (
                     <>
-                      <button 
-                        onClick={() => onBookSlot && onBookSlot(rep)} 
-                        className="btn-primary" 
+                      <button
+                        onClick={() => onBookSlot && onBookSlot(rep)}
+                        className="btn-primary"
                         style={{ width: '100%', justifyContent: 'center', padding: '10px 16px', fontSize: 14 }}
                       >
                         <Calendar size={15} /> Book diagnostic slot
                       </button>
-                      <button 
-                        onClick={() => onRequestQuote && onRequestQuote(rep)} 
-                        className="btn-secondary" 
+                      <button
+                        onClick={() => onRequestQuote && onRequestQuote(rep)}
+                        className="btn-secondary"
                         style={{ width: '100%', justifyContent: 'center', padding: '10px 16px', fontSize: 14 }}
                       >
                         Request custom quote
@@ -835,10 +835,10 @@ export default function InteractiveMap({
                   <button
                     onClick={() => onRSVPEvent && onRSVPEvent(ev._id)}
                     className={isAttending ? 'btn-secondary' : isFull ? 'btn-secondary' : 'btn-primary'}
-                    style={{ 
-                      width: '100%', 
-                      justifyContent: 'center', 
-                      padding: '10px 16px', 
+                    style={{
+                      width: '100%',
+                      justifyContent: 'center',
+                      padding: '10px 16px',
                       fontSize: 14,
                       background: isAttending ? '#FFEBE9' : isFull ? '#FFF4E5' : '#CB4D22',
                       color: isAttending ? '#D32F2F' : isFull ? '#C95100' : '#FFFFFF',
