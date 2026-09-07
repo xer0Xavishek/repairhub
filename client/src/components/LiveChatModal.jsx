@@ -16,25 +16,7 @@ export default function LiveChatModal({ isOpen, onClose, ticket, currentUser }) 
   const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
 
-  // Helper to play subtle incoming message chime using Web Audio API
-  const playMessageChime = () => {
-    try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) return;
-      const audioCtx = new AudioContext();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
-      osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15); // A5
-      gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.25);
-    } catch (e) {}
-  };
+
 
   // Scroll to bottom on new message
   useEffect(() => {
@@ -46,12 +28,12 @@ export default function LiveChatModal({ isOpen, onClose, ticket, currentUser }) 
     if (!isOpen || !ticket) return;
 
     const initialWelcome = [
-      { 
-        id: `init-${ticket.ticketNumber || ticket._id}`, 
-        from: 'System', 
-        senderName: 'RepairHub Live Channel', 
-        text: `Live workshop channel established for Order #${ticket.ticketNumber || 'Recent'} (${ticket.itemTitle || 'Repair Item'}). Chatting with ${isRepairer ? (ticket.customerName || 'Customer') : (ticket.assignedRepairer || 'Technician')}.`, 
-        time: 'Just now' 
+      {
+        id: `init-${ticket.ticketNumber || ticket._id}`,
+        from: 'System',
+        senderName: 'RepairHub Live Channel',
+        text: `Live workshop channel established for Order #${ticket.ticketNumber || 'Recent'} (${ticket.itemTitle || 'Repair Item'}). Chatting with ${isRepairer ? (ticket.customerName || 'Customer') : (ticket.assignedRepairer || 'Technician')}.`,
+        time: 'Just now'
       }
     ];
     setMessages(initialWelcome);
@@ -62,22 +44,22 @@ export default function LiveChatModal({ isOpen, onClose, ticket, currentUser }) 
       axios.get(`/api/chat/request/${targetRequestId}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       })
-      .then((res) => {
-        if (res.data?.success && Array.isArray(res.data.data) && res.data.data.length > 0) {
-          const dbMsgs = res.data.data.map((m) => ({
-            id: m._id,
-            from: m.senderId?.role === 'repairer' ? 'Repairer' : 'Customer',
-            senderName: m.senderId?.name || 'User',
-            text: m.content,
-            time: new Date(m.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
-            senderId: m.senderId?._id || m.senderId
-          }));
-          setMessages(dbMsgs);
-        }
-      })
-      .catch((err) => {
-        console.warn('[Chat History Notice]:', err.message);
-      });
+        .then((res) => {
+          if (res.data?.success && Array.isArray(res.data.data) && res.data.data.length > 0) {
+            const dbMsgs = res.data.data.map((m) => ({
+              id: m._id,
+              from: m.senderId?.role === 'repairer' ? 'Repairer' : 'Customer',
+              senderName: m.senderId?.name || 'User',
+              text: m.content,
+              time: new Date(m.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+              senderId: m.senderId?._id || m.senderId
+            }));
+            setMessages(dbMsgs);
+          }
+        })
+        .catch((err) => {
+          console.warn('[Chat History Notice]:', err.message);
+        });
     }
   }, [isOpen, ticket?.ticketNumber, ticket?._id, isRepairer]);
 
@@ -163,8 +145,8 @@ export default function LiveChatModal({ isOpen, onClose, ticket, currentUser }) 
     const token = currentUser?.token || sessionStorage.getItem('repairhub_token') || localStorage.getItem('repairhub_token');
     if (token && ticket?._id && ticket._id.length === 24 && !ticket._id.startsWith('req_')) {
       try {
-        let receiverId = isRepairer 
-          ? (ticket.requesterId?._id || ticket.requesterId) 
+        let receiverId = isRepairer
+          ? (ticket.requesterId?._id || ticket.requesterId)
           : (ticket.assignedRepairerId?._id || ticket.assignedRepairerId);
 
         if (!receiverId || typeof receiverId !== 'string' || receiverId.length !== 24) {
@@ -188,38 +170,38 @@ export default function LiveChatModal({ isOpen, onClose, ticket, currentUser }) 
 
   return (
     <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div 
-        className="card-elevated" 
-        style={{ 
-          width: '100%', 
-          maxWidth: 480, 
-          height: 560, 
-          display: 'flex', 
-          flexDirection: 'column', 
+      <div
+        className="card-elevated"
+        style={{
+          width: '100%',
+          maxWidth: 480,
+          height: 560,
+          display: 'flex',
+          flexDirection: 'column',
           background: '#FFFFFF',
           borderRadius: 2,
           boxShadow: '0 20px 48px rgba(45, 27, 17, 0.2)'
         }}
       >
-        
+
         {/* Header */}
-        <div style={{ 
-          padding: '16px 20px', 
-          borderBottom: '1px solid #EAE0D6', 
-          display: 'flex', 
-          alignItems: 'center', 
+        <div style={{
+          padding: '16px 20px',
+          borderBottom: '1px solid #EAE0D6',
+          display: 'flex',
+          alignItems: 'center',
           justifyContent: 'space-between',
           background: '#FDFBF9'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ 
-              width: 36, 
-              height: 36, 
-              borderRadius: 2, 
-              background: '#F5EBE6', 
+            <div style={{
+              width: 36,
+              height: 36,
+              borderRadius: 2,
+              background: '#F5EBE6',
               border: '1px solid #EAE0D6',
-              display: 'flex', 
-              alignItems: 'center', 
+              display: 'flex',
+              alignItems: 'center',
               justifyContent: 'center',
               color: '#CB4D22'
             }}>
@@ -230,7 +212,7 @@ export default function LiveChatModal({ isOpen, onClose, ticket, currentUser }) 
                 <span style={{ fontSize: 14.5, fontWeight: 700, color: '#2D1B11' }}>
                   {isRepairer ? 'Customer Live Chat' : 'Technician Direct Chat'}
                 </span>
-                <span 
+                <span
                   title={isConnected ? 'Connected in real-time' : 'Connecting...'}
                   style={{
                     display: 'inline-flex',
@@ -242,10 +224,10 @@ export default function LiveChatModal({ isOpen, onClose, ticket, currentUser }) 
                     background: isConnected ? 'rgba(36, 138, 61, 0.12)' : 'rgba(201, 81, 0, 0.12)',
                   }}
                 >
-                  <span style={{ 
-                    width: 7, 
-                    height: 7, 
-                    borderRadius: '50%', 
+                  <span style={{
+                    width: 7,
+                    height: 7,
+                    borderRadius: '50%',
                     background: isConnected ? '#248A3D' : '#C95100',
                     boxShadow: isConnected ? '0 0 0 2px rgba(36, 138, 61, 0.2)' : 'none'
                   }} />
@@ -262,14 +244,14 @@ export default function LiveChatModal({ isOpen, onClose, ticket, currentUser }) 
         </div>
 
         {/* Message Bubble Feed */}
-        <div style={{ 
-          flex: 1, 
-          overflowY: 'auto', 
-          padding: '18px 20px', 
-          display: 'flex', 
-          flexDirection: 'column', 
-          gap: 12, 
-          background: '#FAF8F5' 
+        <div style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: '18px 20px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12,
+          background: '#FAF8F5'
         }}>
           {messages.map((m) => {
             if (m.from === 'System') {
@@ -294,12 +276,12 @@ export default function LiveChatModal({ isOpen, onClose, ticket, currentUser }) 
 
             const currentUserId = currentUser?._id ? String(currentUser._id) : '';
             const msgSenderId = m.senderId ? (typeof m.senderId === 'object' ? String(m.senderId._id || m.senderId) : String(m.senderId)) : '';
-            const isMe = (currentUserId && msgSenderId) 
-              ? (msgSenderId === currentUserId) 
+            const isMe = (currentUserId && msgSenderId)
+              ? (msgSenderId === currentUserId)
               : (m.from === roleLabel);
 
-            const displayName = isMe 
-              ? 'You' 
+            const displayName = isMe
+              ? 'You'
               : (m.senderName || (m.from === 'Repairer' ? 'Technician' : 'Customer'));
 
             return (
@@ -317,10 +299,10 @@ export default function LiveChatModal({ isOpen, onClose, ticket, currentUser }) 
                   boxShadow: '0 1px 3px rgba(45, 27, 17, 0.05)',
                 }}>
                   <p style={{ fontSize: 13, margin: 0, lineHeight: 1.45 }}>{m.text}</p>
-                  <p style={{ 
-                    fontSize: 10, 
-                    margin: '4px 0 0', 
-                    opacity: isMe ? 0.85 : 0.6, 
+                  <p style={{
+                    fontSize: 10,
+                    margin: '4px 0 0',
+                    opacity: isMe ? 0.85 : 0.6,
                     textAlign: 'right',
                     letterSpacing: '0.02em'
                   }}>
@@ -359,11 +341,11 @@ export default function LiveChatModal({ isOpen, onClose, ticket, currentUser }) 
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={`Send message as ${senderDisplayName}…`}
-                style={{ 
-                  flex: 1, 
-                  background: '#FAF8F5', 
-                  borderRadius: 2, 
-                  padding: '9px 14px', 
+                style={{
+                  flex: 1,
+                  background: '#FAF8F5',
+                  borderRadius: 2,
+                  padding: '9px 14px',
                   fontSize: 13,
                   border: '1px solid #EAE0D6'
                 }}
@@ -371,8 +353,8 @@ export default function LiveChatModal({ isOpen, onClose, ticket, currentUser }) 
               <button
                 type="submit"
                 disabled={!input.trim()}
-                style={{ 
-                  padding: '9px 16px', 
+                style={{
+                  padding: '9px 16px',
                   borderRadius: 2,
                   background: input.trim() ? '#CB4D22' : '#EAE0D6',
                   color: '#FFFFFF',

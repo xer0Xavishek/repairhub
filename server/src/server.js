@@ -11,27 +11,27 @@ const PORT = process.env.PORT || 5000;
 
 // Connect to Database
 connectDB();
-
+//nodejs http server
 const server = http.createServer(app);
 
-// Socket.io Real-time WebSocket setup
+// the central Socket.io Server instance 
 const io = new Server(server, {
   cors: {
     origin: '*',
     methods: ['GET', 'POST'],
   },
 });
-
+//listen client connections ,Join a repair request specific room , Broadcast message
 io.on('connection', (socket) => {
   console.log(`[Socket.io] Client connected: ${socket.id}`);
 
-  // Join a repair request specific room
+
   socket.on('join_room', (roomId) => {
     socket.join(roomId);
     console.log(`[Socket.io] Client ${socket.id} joined room ${roomId}`);
   });
 
-  // Broadcast message
+
   socket.on('send_message', (data) => {
     // data: { roomId, ticketNumber, repairRequestId, message }
     if (data?.roomId) {
@@ -43,8 +43,6 @@ io.on('connection', (socket) => {
         emitter = emitter.to(`order_${data.repairRequestId}`);
       }
       emitter.emit('receive_message', data.message);
-    } else {
-      socket.broadcast.emit('receive_message', data.message);
     }
   });
 

@@ -13,7 +13,7 @@ const sendMessage = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Please provide request ID and content' });
     }
 
-    // Resolve repairRequestId and enforce chat closure on completed orders (Bug 5)
+    // user sent a MongoDB ID or a Human-Readable Ticket Number.??  targetReq = the Repair Request document
     let targetReq = null;
     if (mongoose.Types.ObjectId.isValid(repairRequestId)) {
       targetReq = await RepairRequest.findById(repairRequestId);
@@ -30,9 +30,9 @@ const sendMessage = async (req, res) => {
         });
       }
       if (!receiverId) {
-        receiverId = req.user._id.toString() === targetReq.requesterId.toString()
-          ? targetReq.assignedRepairerId
-          : targetReq.requesterId;
+        receiverId = req.user._id.toString() === targetReq.requesterId.toString() //Compares the logged-in user's ID (req.user._id) with the customer who created the order
+          ? targetReq.assignedRepairerId // If they match, the receiver is the technician
+          : targetReq.requesterId;      // If they don't match, the receiver is the customer
       }
     }
 
